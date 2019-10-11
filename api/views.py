@@ -14,8 +14,11 @@ from rest_framework.views import APIView
 
 
 class UserInfoView(generics.ListCreateAPIView):
-    queryset = UserInfo.objects.all().order_by('id')
     serializer_class = UserInfoSerializer
+
+    def get_queryset(self):
+        current_user = self.request.user
+        return UserInfo.objects.filter(user=current_user)
 
 
 class InsuranceTypeView(generics.ListCreateAPIView):
@@ -31,6 +34,10 @@ class InsurancePlanView(generics.ListCreateAPIView):
 class InsurancesView(generics.ListCreateAPIView):
     queryset = Insurance.objects.all().order_by('id')
     serializer_class = InsurancesSerializer
+
+    def get_queryset(self):
+        current_user = self.request.user
+        return Insurance.objects.filter(user=current_user)
 
 
 class ClaimsView(generics.ListCreateAPIView):
@@ -96,3 +103,5 @@ class LogoutView(dLogoutView):
 #     def get(self, request):
 #         queryset = Menu.objects.all()
 #         return Response({'menus': queryset})
+
+

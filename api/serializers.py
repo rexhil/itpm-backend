@@ -9,8 +9,14 @@ class TokenSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=255)
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'is_staff', 'groups']
+
+
 class UserInfoSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='username')
+    user = UserSerializer(many=False, read_only=True)
 
     class Meta:
         model = UserInfo
@@ -25,7 +31,7 @@ class InsuranceTypeSerializer(serializers.ModelSerializer):
 
 
 class InsurancePlanSerializer(serializers.ModelSerializer):
-    insurance_type = serializers.SlugRelatedField(queryset=InsuranceType.objects.all(), slug_field='name')
+    insurance_type = InsuranceTypeSerializer(many=False, read_only=True)
 
     class Meta:
         model = InsurancePlan
@@ -33,20 +39,21 @@ class InsurancePlanSerializer(serializers.ModelSerializer):
 
 
 class InsurancesSerializer(serializers.ModelSerializer):
-    insurance_plan = serializers.SlugRelatedField(queryset=InsurancePlan.objects.all(), slug_field='name')
-    user = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='username')
-    insurance_type = InsuranceTypeSerializer(many=True, read_only=True)
+    insurance_plan = InsurancePlanSerializer(many=False, read_only=True)
+    user = UserSerializer(many=False, read_only=True)
 
     class Meta:
         model = Insurance
-        fields = ['insurance_plan', 'user', 'insurance_type']
+        fields = ['insurance_plan', 'user']
 
 
 class ClaimsSerializer(serializers.ModelSerializer):
+    insurance = InsurancePlanSerializer(many=False, read_only=True)
 
     class Meta:
         model = Claim
         fields = ['insurance', 'amount']
+
 
 
 # class UserSerializer(serializers.ModelSerializer):
