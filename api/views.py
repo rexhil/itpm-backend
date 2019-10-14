@@ -9,8 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework import status
 from rest_framework.response import Response
 from django.shortcuts import render, redirect
-from rest_framework.renderers import TemplateHTMLRenderer
-from rest_framework.views import APIView
+from django.http import JsonResponse
 
 
 class UserInfoView(generics.ListCreateAPIView):
@@ -105,3 +104,44 @@ class LogoutView(dLogoutView):
 #         return Response({'menus': queryset})
 
 
+def insurance_view(request, user_id):
+    insurance_types = []
+    added_insurance_type = []
+    insurances = Insurance.objects.filter(user__id=user_id)
+    claims = Claim.objects.filter(insurance__user__id=user_id)
+
+    for instance in insurances:
+        if instance.insurance_plan.insurance_type.name not in added_insurance_type:
+            insurance_types.append({'insurance_type_id': instance.insurance_plan.insurance_type.id,
+                                    'insurance_type_name': instance.insurance_plan.insurance_type.name,
+                                    'insurance': []})
+            added_insurance_type.append(instance.insurance_plan.insurance_type.name)
+
+    for _type in insurance_types:
+        for instance in insurances:
+            if instance.insurance_plan.insurance_type.name == _type['insurance_type_name']:
+                _type['insurance'].append(
+                    {
+                        'insurance_id': instance.id,
+                        'insurance_plan_id': instance.insurance_plan.id,
+                        'insurance_plan_name': instance.insurance_plan.name,
+                        'premium': instance.insurance_plan.premium,
+                        'total': instance.insurance_plan.total,
+                        'duration': instance.insurance_plan.duration,
+                        'claims': []
+
+                    }
+                )
+    for _type in insurance_types:
+        for insurance in _type['insurance']:
+            for claim in claims:
+                if insurance['insurance_id'] == claim.insurance.id:
+                    insurance['claims'].append({
+                        'claim_id': claim.id,
+                        'claim_amount': claim.amount,
+                        'claim_active_status': claim.is_active,
+                        'claim_made_on': claim.creation_time
+
+                    })
+
+    return JsonResponse(insurance_types, safe=False)

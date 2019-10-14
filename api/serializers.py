@@ -46,6 +46,31 @@ class InsurancesSerializer(serializers.ModelSerializer):
         model = Insurance
         fields = ['insurance_plan', 'user']
 
+    def to_representation(self, instance):
+        insurance_types = []
+        added_insurance_type = []
+        print(instance)
+        # for insurance in instance:
+        if instance.insurance_plan.insurance_type.name not in added_insurance_type:
+            insurance_types.append({'id': instance.insurance_plan.insurance_type.id,
+                                    'name': instance.insurance_plan.insurance_type.name,
+                                    'insurance': []})
+            added_insurance_type.append(instance.insurance_plan.insurance_type.name)
+
+        for _types in insurance_types:
+            if instance.insurance_plan.insurance_type.name == _types['name']:
+                _types['insurance'].append(
+                    {
+                        'id': instance.insurance_plan.id,
+                        'name': instance.insurance_plan.name,
+                        'premium': instance.insurance_plan.premium,
+                        'total': instance.insurance_plan.total,
+                        'duration': instance.insurance_plan.duration,
+
+                    }
+                )
+        return insurance_types
+
 
 class ClaimsSerializer(serializers.ModelSerializer):
     insurance = InsurancePlanSerializer(many=False, read_only=True)
@@ -53,38 +78,3 @@ class ClaimsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Claim
         fields = ['insurance', 'amount']
-
-
-
-# class UserSerializer(serializers.ModelSerializer):
-#     location = serializers.SlugRelatedField(queryset=Location.objects.all(), slug_field='location_name')
-#     attribute = serializers.SlugRelatedField(queryset=Attribute.objects.all(), slug_field='attribute_name')
-#     rule_type = serializers.SlugRelatedField(queryset=RuleType.objects.all(), slug_field='rule_type_name')
-#
-#     class Meta:
-#         model = U
-#         fields = '__all__'
-#
-#
-# class ReportSerializer(serializers.ModelSerializer):
-#     location = serializers.SlugRelatedField(queryset=Location.objects.all(), slug_field='location_name')
-#     attribute = serializers.SlugRelatedField(queryset=Attribute.objects.all(), slug_field='attribute_name')
-#     rule_type = serializers.SlugRelatedField(queryset=RuleType.objects.all(), slug_field='rule_type_name')
-#
-#     class Meta:
-#         model = ReportTable
-#         fields = '__all__'
-#
-#
-# class TokenSerializer(serializers.Serializer):
-#     token = serializers.CharField(max_length=255)
-#
-#
-# class SummaryReportSerializer(serializers.ModelSerializer):
-#     location = serializers.SlugRelatedField(queryset=Location.objects.all(), slug_field='location_name')
-#     attribute = serializers.SlugRelatedField(queryset=Attribute.objects.all(), slug_field='attribute_name')
-#     rule_type = serializers.SlugRelatedField(queryset=RuleType.objects.all(), slug_field='rule_type_name')
-#
-#     class Meta:
-#         model = SummaryReport
-#         fields = '__all__'

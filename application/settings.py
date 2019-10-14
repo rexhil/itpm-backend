@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # Third Party Apps
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
 
     # Local Apps
     'api',
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -145,3 +147,4 @@ DEBUG = True
 ALLOWED_HOSTS = '*'
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 DURATIONFIELD_ALLOW_YEARS = True
+CORS_ORIGIN_ALLOW_ALL = True
