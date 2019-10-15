@@ -1,6 +1,6 @@
 from .models import UserInfo, InsuranceType, InsurancePlan, Insurance, Claim
-from .serializers import UserInfoSerializer, InsurancePlanSerializer, ClaimsSerializer, InsurancesSerializer
-from .serializers import InsuranceTypeSerializer
+from .serializers import UserInfoSerializer, InsurancePlanSerializer, ClaimsSerializer, UserInsurancesSerializer
+from .serializers import InsuranceTypeSerializer, InsurancesSerializer
 from django.contrib.auth.views import LoginView as dLoginView, LogoutView as dLogoutView
 from rest_framework_jwt.settings import api_settings
 from rest_framework import generics, permissions
@@ -92,16 +92,6 @@ class LogoutView(dLogoutView):
 
     def post(self, request, *args, **kwargs):
         logout(request)
-
-
-# class UploadInputSheetView(APIView):
-#     renderer_classes = [TemplateHTMLRenderer]
-#     template_name = 'dashboard/upload-input-sheet.html'
-#     queryset = Menu.objects.all()
-#
-#     def get(self, request):
-#         queryset = Menu.objects.all()
-#         return Response({'menus': queryset})
 
 
 def insurance_view(request, user_id):

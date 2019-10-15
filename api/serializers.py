@@ -39,6 +39,15 @@ class InsurancePlanSerializer(serializers.ModelSerializer):
 
 
 class InsurancesSerializer(serializers.ModelSerializer):
+    # insurance_plan = InsurancePlanSerializer(many=False, read_only=True)
+    # user = UserSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Insurance
+        fields = ['insurance_plan', 'user']
+
+
+class UserInsurancesSerializer(serializers.ModelSerializer):
     insurance_plan = InsurancePlanSerializer(many=False, read_only=True)
     user = UserSerializer(many=False, read_only=True)
 
@@ -73,8 +82,6 @@ class InsurancesSerializer(serializers.ModelSerializer):
 
 
 class ClaimsSerializer(serializers.ModelSerializer):
-    insurance = InsurancePlanSerializer(many=False, read_only=True)
-
     class Meta:
         model = Claim
         fields = ['insurance', 'amount']

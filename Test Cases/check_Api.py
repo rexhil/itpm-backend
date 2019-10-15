@@ -17,15 +17,14 @@ def python_request_login():
     client = requests.session()
     login_url = '{}/login/'.format(base_url)
     client.get(login_url)
-    # Get CSRF Before Login
     client, csrftoken = get_csrf(client)
 
     login_data = dict(username='rexhil', password='97a177a5e1', csrfmiddlewaretoken=csrftoken)
     client.post(login_url, data=login_data, headers=dict(Referer=login_url), allow_redirects=False)
-    # Get CSRF After Login
     client, csrftoken = get_csrf(client)
 
     return client, csrftoken
+
 
 class LoginTest(unittest.TestCase):
     def setUp(self):

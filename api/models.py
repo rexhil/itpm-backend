@@ -37,7 +37,10 @@ class Insurance(models.Model):
 
 
 class Claim(models.Model):
-    amount = models.CharField(max_length=40, null=False, unique=True)
+    amount = models.CharField(max_length=40, null=False, unique=False)
     insurance = models.ForeignKey(Insurance, null=False, on_delete=models.CASCADE)
+    approval_state = models.CharField(max_length=1,
+                                      choices=(('A', 'Approved'), ('N', 'Not approved'), ('P', 'Pending')),
+                                      default='P')
     is_active = models.BooleanField(default=True, null=False)
     creation_time = models.DateTimeField(default=timezone.now)
