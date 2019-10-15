@@ -85,3 +85,9 @@ class ClaimsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Claim
         fields = ['insurance', 'amount']
+
+
+class ClaimUpdateSerialier(serializers.ModelSerializer):
+    class Meta:
+        model = Claim
+        fields = ['amount', 'is_active']

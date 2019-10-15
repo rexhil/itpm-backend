@@ -3,4 +3,3 @@ __pycache__
 api/migrations/__pycache__
 application/__pycache__
 dashboard/__pycache__
-db.sqlite3

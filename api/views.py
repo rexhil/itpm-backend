@@ -1,6 +1,6 @@
 from .models import UserInfo, InsuranceType, InsurancePlan, Insurance, Claim
 from .serializers import UserInfoSerializer, InsurancePlanSerializer, ClaimsSerializer, UserInsurancesSerializer
-from .serializers import InsuranceTypeSerializer, InsurancesSerializer
+from .serializers import InsuranceTypeSerializer, InsurancesSerializer, ClaimUpdateSerialier
 from django.contrib.auth.views import LoginView as dLoginView, LogoutView as dLogoutView
 from rest_framework_jwt.settings import api_settings
 from rest_framework import generics, permissions
@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
 
 class UserInfoView(generics.ListCreateAPIView):
@@ -40,8 +41,23 @@ class InsurancesView(generics.ListCreateAPIView):
 
 
 class ClaimsView(generics.ListCreateAPIView):
-    queryset = Claim.objects.filter(is_active=True).order_by('id')
     serializer_class = ClaimsSerializer
+    lookup_url_kwarg = 'user_id'
+    lookup_field = 'insurance__user__id'
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        queryset = Claim.objects.filter(is_active=True).order_by('id')
+        if user_id:
+            queryset = queryset.filter(insurance__user__id=user_id)
+        return queryset
+
+
+class UpdateClaims(generics.RetrieveUpdateAPIView):
+    queryset = Claim.objects.filter(is_active=True)
+    lookup_field = 'id'
+    serializer_class = ClaimUpdateSerialier
+    lookup_url_kwarg = 'claim_id'
 
 
 def dashboard(request):
