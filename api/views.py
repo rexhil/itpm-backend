@@ -1,6 +1,6 @@
 from .models import UserInfo, InsuranceType, InsurancePlan, Insurance, Claim
-from .serializers import UserInfoSerializer, InsurancePlanSerializer, ClaimsSerializer, UserInsurancesSerializer
-from .serializers import InsuranceTypeSerializer, InsurancesSerializer, ClaimUpdateSerialier
+from .serializers import UserInfoSerializer, InsurancePlanSerializer, ClaimsSerializer
+from .serializers import InsuranceTypeSerializer, InsurancesSerializer, ClaimUpdateSerialier, UserTypeSerializer
 from django.contrib.auth.views import LoginView as dLoginView, LogoutView as dLogoutView
 from rest_framework_jwt.settings import api_settings
 from rest_framework import generics, permissions
@@ -26,8 +26,14 @@ class UserInfoView(generics.ListCreateAPIView):
     serializer_class = UserInfoSerializer
 
     def get_queryset(self):
-        current_user = self.request.user
-        return UserInfo.objects.filter(user=current_user)
+        user_id = self.kwargs['user_id']
+        return UserInfo.objects.filter(id=user_id)
+
+
+class UserType(generics.ListAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = UserTypeSerializer
 
 
 class InsuranceTypeView(generics.ListCreateAPIView):

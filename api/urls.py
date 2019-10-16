@@ -4,7 +4,7 @@ from .views import LoginView, LogoutView, insurance_view, UpdateClaims
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
-    path('user_info/', csrf_exempt(UserInfoView.as_view()), name="user_info"),
+    path('user_info/<int:user_id>', csrf_exempt(UserInfoView.as_view()), name="user_info"),
     path('claim/<int:user_id>', csrf_exempt(ClaimsView.as_view()), name="claim"),
     path('insurance_plan/', csrf_exempt(InsurancePlanView.as_view()), name="insurance_plan"),
     path('insurance/<int:user_id>', csrf_exempt(insurance_view), name="user_insurance"),

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User, UserInfo, InsuranceType, InsurancePlan, Insurance, Claim
+from django.contrib.auth.models import Group
 
 
 class TokenSerializer(serializers.Serializer):
@@ -91,3 +92,9 @@ class ClaimUpdateSerialier(serializers.ModelSerializer):
     class Meta:
         model = Claim
         fields = ['amount', 'is_active']
+
+
+class UserTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['id', 'name']
