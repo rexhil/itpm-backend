@@ -21,8 +21,8 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 
 class UserInfoView(generics.ListCreateAPIView):
-    permission_classes = (permissions.AllowAny,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    permission_classes = (permissions.AllowAny,)
     serializer_class = UserInfoSerializer
 
     def get_queryset(self):
@@ -80,8 +80,8 @@ class UpdateClaims(generics.RetrieveUpdateAPIView):
 
 
 class LoginView(generics.CreateAPIView):
-    permission_classes = (permissions.AllowAny,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    permission_classes = (permissions.AllowAny,)
 
     """
     POST auth/login/
