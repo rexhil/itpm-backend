@@ -10,11 +10,19 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return  # To not perform the csrf check previously happening
 
 
 class UserInfoView(generics.ListCreateAPIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = UserInfoSerializer
 
     def get_queryset(self):
@@ -23,18 +31,21 @@ class UserInfoView(generics.ListCreateAPIView):
 
 
 class InsuranceTypeView(generics.ListCreateAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     permission_classes = (permissions.AllowAny,)
     queryset = InsuranceType.objects.all().order_by('id')
     serializer_class = InsuranceTypeSerializer
 
 
 class InsurancePlanView(generics.ListCreateAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     permission_classes = (permissions.AllowAny,)
     queryset = InsurancePlan.objects.all().order_by('id')
     serializer_class = InsurancePlanSerializer
 
 
 class InsurancesView(generics.ListCreateAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     permission_classes = (permissions.AllowAny,)
     queryset = Insurance.objects.all().order_by('id')
     serializer_class = InsurancesSerializer
@@ -45,6 +56,7 @@ class InsurancesView(generics.ListCreateAPIView):
 
 
 class ClaimsView(generics.ListCreateAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     permission_classes = (permissions.AllowAny,)
     serializer_class = ClaimsSerializer
     lookup_url_kwarg = 'user_id'
@@ -59,6 +71,7 @@ class ClaimsView(generics.ListCreateAPIView):
 
 
 class UpdateClaims(generics.RetrieveUpdateAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     permission_classes = (permissions.AllowAny,)
     queryset = Claim.objects.filter(is_active=True)
     lookup_field = 'id'
@@ -66,27 +79,15 @@ class UpdateClaims(generics.RetrieveUpdateAPIView):
     lookup_url_kwarg = 'claim_id'
 
 
-def dashboard(request):
-    permission_classes = (permissions.AllowAny,)
-    if request.user.is_authenticated:
-        return render(request, template_name='dashboard/home.html', context={'title': 'Dashboard'})
-    return redirect('/login/')
-
-
-class UserLoginView(dLoginView):
-    permission_classes = (permissions.AllowAny,)
-    redirect_authenticated_user = True
-    template_name = 'dashboard/login.html'
-
-
 class LoginView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
     """
     POST auth/login/
     """
     # This permission class will override the global permission
     # class setting
-    permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
         username = request.data.get("username", "")
@@ -97,20 +98,13 @@ class LoginView(generics.CreateAPIView):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            # login saves the user’s ID in the session,
-            # using Django’s session framework.
             login(request, user)
-            serializer = TokenSerializer(data={
-                # using drf jwt utility functions to generate a token
-                "token": jwt_encode_handler(
-                    jwt_payload_handler(user)
-                )})
-            serializer.is_valid()
-            return Response(serializer.data)
+            return Response(status=status.HTTP_202_ACCEPTED, data={'username': user.username, 'user_id': user.id})
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class LogoutView(dLogoutView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     permission_classes = (permissions.AllowAny,)
     next_page = '/login/'
 
@@ -119,7 +113,6 @@ class LogoutView(dLogoutView):
 
 
 def insurance_view(request, user_id):
-    # permission_classes = (permissions.AllowAny,)
     insurance_types = []
     added_insurance_type = []
     insurances = Insurance.objects.filter(user__id=user_id)
