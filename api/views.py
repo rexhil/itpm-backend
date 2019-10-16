@@ -14,6 +14,7 @@ from django.shortcuts import get_object_or_404
 
 
 class UserInfoView(generics.ListCreateAPIView):
+    permission_classes = (permissions.AllowAny,)
     serializer_class = UserInfoSerializer
 
     def get_queryset(self):
@@ -22,16 +23,19 @@ class UserInfoView(generics.ListCreateAPIView):
 
 
 class InsuranceTypeView(generics.ListCreateAPIView):
+    permission_classes = (permissions.AllowAny,)
     queryset = InsuranceType.objects.all().order_by('id')
     serializer_class = InsuranceTypeSerializer
 
 
 class InsurancePlanView(generics.ListCreateAPIView):
+    permission_classes = (permissions.AllowAny,)
     queryset = InsurancePlan.objects.all().order_by('id')
     serializer_class = InsurancePlanSerializer
 
 
 class InsurancesView(generics.ListCreateAPIView):
+    permission_classes = (permissions.AllowAny,)
     queryset = Insurance.objects.all().order_by('id')
     serializer_class = InsurancesSerializer
 
@@ -41,6 +45,7 @@ class InsurancesView(generics.ListCreateAPIView):
 
 
 class ClaimsView(generics.ListCreateAPIView):
+    permission_classes = (permissions.AllowAny,)
     serializer_class = ClaimsSerializer
     lookup_url_kwarg = 'user_id'
     lookup_field = 'insurance__user__id'
@@ -54,6 +59,7 @@ class ClaimsView(generics.ListCreateAPIView):
 
 
 class UpdateClaims(generics.RetrieveUpdateAPIView):
+    permission_classes = (permissions.AllowAny,)
     queryset = Claim.objects.filter(is_active=True)
     lookup_field = 'id'
     serializer_class = ClaimUpdateSerialier
@@ -61,6 +67,7 @@ class UpdateClaims(generics.RetrieveUpdateAPIView):
 
 
 def dashboard(request):
+    permission_classes = (permissions.AllowAny,)
     if request.user.is_authenticated:
         return render(request, template_name='dashboard/home.html', context={'title': 'Dashboard'})
     return redirect('/login/')
@@ -73,6 +80,7 @@ class UserLoginView(dLoginView):
 
 
 class LoginView(generics.CreateAPIView):
+    permission_classes = (permissions.AllowAny,)
     """
     POST auth/login/
     """
@@ -111,6 +119,7 @@ class LogoutView(dLogoutView):
 
 
 def insurance_view(request, user_id):
+    # permission_classes = (permissions.AllowAny,)
     insurance_types = []
     added_insurance_type = []
     insurances = Insurance.objects.filter(user__id=user_id)
