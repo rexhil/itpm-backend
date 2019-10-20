@@ -38,6 +38,9 @@ class Insurance(models.Model):
     user = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
     creation_time = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return "Insurance Plan: {}, User: {}".format(self.insurance_plan.name, self.user.username)
+
 
 class Claim(models.Model):
     amount = models.CharField(max_length=40, null=False, unique=False)
