@@ -172,7 +172,7 @@ def claim_view(request, user_id):
         _data = {
             'id': claim.id,
             'insurance_name': claim.insurance.insurance_plan.name,
-            'insurance_totaltotal': claim.insurance.insurance_plan.total,
+            'insurance_total': claim.insurance.insurance_plan.total,
             'insurance_plan_id': claim.insurance.insurance_plan.id,
             'premium': claim.insurance.insurance_plan.premium,
             'duration': claim.insurance.insurance_plan.duration,
