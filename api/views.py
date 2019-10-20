@@ -181,6 +181,6 @@ def claim_view(request, user_id):
             'amount': claim.amount,
             'name': claim.insurance.user.first_name
         }
-        claim.append(_data)
+        all_claims.append(_data)
 
     return JsonResponse(all_claims, safe=False)
