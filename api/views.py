@@ -98,12 +98,14 @@ class LoginView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         username = request.data.get("username", "")
         password = request.data.get("password", "")
+        _type = request.data.get("type", "")
 
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
         user = authenticate(request, username=username, password=password)
-        if user is not None:
+        is_staff = False if _type == 'customer' else True
+        if user is not None and is_staff == user.is_staff:
             login(request, user)
             return Response(status=status.HTTP_202_ACCEPTED, data={'username': user.username, 'user_id': user.id})
         return Response(False)
@@ -164,7 +166,7 @@ def insurance_view(request, user_id):
 def claim_view(request, user_id):
     all_claims = []
     if user_id:
-        claims = Claim.objects.filter(insurance__user__id=user_id)
+        claims = Claim.objects.filter(insurance__user__id=user_id).order_by('-creation_time')
     else:
         claims = Claim.objects.filter()
 
