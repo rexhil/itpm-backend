@@ -10,6 +10,9 @@ class UserInfo(models.Model):
     mobile = models.CharField(max_length=10, null=False)
     creation_time = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return self.user.username
+
 
 class InsuranceType(models.Model):
     name = models.CharField(max_length=20, null=False)
