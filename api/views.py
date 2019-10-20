@@ -27,7 +27,7 @@ class UserInfoView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']
-        return UserInfo.objects.filter(id=user_id)
+        return UserInfo.objects.filter(user__id=user_id)
 
 
 class UserType(generics.ListAPIView):
