@@ -69,10 +69,7 @@ class ClaimsView(generics.ListCreateAPIView):
     lookup_field = 'insurance__user__id'
 
     def get_queryset(self):
-        user_id = self.kwargs['user_id']
         queryset = Claim.objects.filter(is_active=True).order_by('id')
-        if user_id:
-            queryset = queryset.filter(insurance__user__id=user_id)
         return queryset
 
 
