@@ -106,7 +106,7 @@ class LoginView(generics.CreateAPIView):
         if user is not None:
             login(request, user)
             return Response(status=status.HTTP_202_ACCEPTED, data={'username': user.username, 'user_id': user.id})
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response(False)
 
 
 class LogoutView(dLogoutView):
@@ -159,3 +159,26 @@ def insurance_view(request, user_id):
                     })
 
     return JsonResponse(insurance_types, safe=False)
+
+
+def claim_view(request, user_id):
+    all_claims = []
+    if user_id:
+        claims = Claim.objects.filter(insurance__user__id=user_id)
+    else:
+        claims = Claim.objects.filter()
+
+    for claim in claims:
+        _data = {
+            'id': claim.id,
+            'insurance_name': claim.insurance.insurance_plan.name,
+            'insurance_totaltotal': claim.insurance.insurance_plan.total,
+            'insurance_plan_id': claim.insurance.insurance_plan.id,
+            'premium': claim.insurance.insurance_plan.premium,
+            'duration': claim.insurance.insurance_plan.duration,
+            'amount': claim.amount,
+            'name': claim.insurance.user.first_name
+        }
+        claim.append(_data)
+
+    return JsonResponse(all_claims, safe=False)

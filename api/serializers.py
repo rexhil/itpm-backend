@@ -85,13 +85,13 @@ class UserInsurancesSerializer(serializers.ModelSerializer):
 class ClaimsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Claim
-        fields = ['insurance', 'amount']
+        fields = ['id', 'insurance', 'amount']
 
 
 class ClaimUpdateSerialier(serializers.ModelSerializer):
     class Meta:
         model = Claim
-        fields = ['amount', 'is_active']
+        fields = ['amount', 'is_active', 'approval_state']
 
 
 class UserTypeSerializer(serializers.ModelSerializer):
