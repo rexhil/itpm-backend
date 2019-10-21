@@ -176,7 +176,8 @@ def claim_view(request, user_id):
             'premium': claim.insurance.insurance_plan.premium,
             'duration': claim.insurance.insurance_plan.duration,
             'amount': claim.amount,
-            'name': claim.insurance.user.first_name
+            'name': claim.insurance.user.first_name,
+            'status': claim.approval_state
         }
         all_claims.append(_data)
 
