@@ -1,6 +1,7 @@
 from django.urls import path
+from django.conf.urls import url
 from .views import UserInfoView, ClaimsView, InsurancePlanView, InsurancesView, InsuranceTypeView
-from .views import LoginView, LogoutView, insurance_view, UpdateClaims, claim_view
+from .views import LoginView, LogoutView, insurance_view, update_claim, claim_view, delete_claim
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
@@ -10,8 +11,9 @@ urlpatterns = [
     path('insurance_plan/', csrf_exempt(InsurancePlanView.as_view()), name="insurance_plan"),
     path('insurance/<int:user_id>', csrf_exempt(insurance_view), name="user_insurance"),
     path('insurance/', csrf_exempt(InsurancesView.as_view()), name="insurance"),
-    path('claim/update/<int:claim_id>', csrf_exempt(UpdateClaims.as_view()), name="update_claim"),
+    path('claim/update/<int:claim_id>', csrf_exempt(update_claim), name="update_claim"),
     path('insurance_type/', csrf_exempt(InsuranceTypeView.as_view()), name="insurance_type"),
     path('login/', csrf_exempt(LoginView.as_view()), name="post-login"),
     path('logout/', csrf_exempt(LogoutView.as_view()), name="logout"),
+    path('claim/delete/<int:claim_id>', csrf_exempt(delete_claim), name='delete_claim'),
 ]

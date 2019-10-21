@@ -163,7 +163,7 @@ def insurance_view(request, user_id):
 def claim_view(request, user_id):
     all_claims = []
     if user_id:
-        claims = Claim.objects.filter(insurance__user__id=user_id).order_by('-creation_time')
+        claims = Claim.objects.filter(insurance__user__id=user_id)
     else:
         claims = Claim.objects.filter()
 
@@ -182,3 +182,40 @@ def claim_view(request, user_id):
         all_claims.append(_data)
 
     return JsonResponse(all_claims, safe=False)
+
+
+def delete_claim(request, claim_id):
+    if request.method == "GET":
+        return JsonResponse({'error': "Method Not Allowed"})
+    else:
+        try:
+            Claim.objects.filter(id=claim_id).delete()
+        except Exception as E:
+            return JsonResponse({'error': E}, status=401)
+        else:
+            return JsonResponse({'Status': 'Success'})
+
+
+def update_claim(request, claim_id):
+    if request.method == "GET":
+        return JsonResponse({'error': "Method Not Allowed"})
+    else:
+        _request = dict(request.POST)
+        try:
+            amount = _request.get("amount", None)
+            is_active = _request.get("is_active", None)
+            state = _request.get("approval_state", None)[0]
+            claim = Claim.objects.filter(id=claim_id)[0]
+            if amount:
+                claim.amount = amount
+            if is_active:
+                claim.is_active = is_active
+            if status:
+                claim.approval_state = state
+            claim.save()
+        except Exception as E:
+            return JsonResponse({'error': E}, status=401)
+        else:
+            return JsonResponse({'Status': 'Success'})
+
+
