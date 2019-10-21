@@ -204,17 +204,17 @@ def update_claim(request, claim_id):
         try:
             amount = _request.get("amount", None)
             is_active = _request.get("is_active", None)
-            state = _request.get("approval_state", None)[0]
+            state = _request.get("approval_state", None)
             claim = Claim.objects.filter(id=claim_id)[0]
             if amount:
-                claim.amount = amount
+                claim.amount = amount[0]
             if is_active:
-                claim.is_active = is_active
-            if status:
-                claim.approval_state = state
+                claim.is_active = is_active[0]
+            if state:
+                claim.approval_state = state[0]
             claim.save()
         except Exception as E:
-            return JsonResponse({'error': E}, status=401)
+            return JsonResponse({'error': str(E)}, status=401)
         else:
             return JsonResponse({'Status': 'Success'})
 
