@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-
+import json
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
 
@@ -200,18 +200,18 @@ def update_claim(request, claim_id):
     if request.method == "GET":
         return JsonResponse({'error': "Method Not Allowed"})
     else:
-        _request = dict(request.POST)
+        _request = json.loads(request.body.decode('utf-8'))
         try:
             amount = _request.get("amount", None)
             is_active = _request.get("is_active", None)
             state = _request.get("approval_state", None)
             claim = Claim.objects.filter(id=claim_id)[0]
             if amount:
-                claim.amount = amount[0]
+                claim.amount = amount
             if is_active:
-                claim.is_active = is_active[0]
+                claim.is_active = is_active
             if state:
-                claim.approval_state = state[0]
+                claim.approval_state = state
             claim.save()
         except Exception as E:
             return JsonResponse({'error': str(E)}, status=401)
