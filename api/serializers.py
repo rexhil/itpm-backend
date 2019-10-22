@@ -83,6 +83,7 @@ class UserInsurancesSerializer(serializers.ModelSerializer):
 
 
 class ClaimsSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Claim
         fields = ['id', 'insurance', 'amount']

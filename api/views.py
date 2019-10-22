@@ -50,15 +50,15 @@ class InsurancePlanView(generics.ListCreateAPIView):
     serializer_class = InsurancePlanSerializer
 
 
-class InsurancesView(generics.ListCreateAPIView):
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    permission_classes = (permissions.AllowAny,)
-    queryset = Insurance.objects.all().order_by('id')
-    serializer_class = InsurancesSerializer
-
-    def get_queryset(self):
-        current_user = self.request.user
-        return Insurance.objects.filter(user=current_user)
+# class InsurancesView(generics.ListCreateAPIView):
+#     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+#     permission_classes = (permissions.AllowAny,)
+#     queryset = Insurance.objects.all().order_by('id')
+#     serializer_class = InsurancesSerializer
+#
+#     def get_queryset(self):
+#         current_user = self.request.user
+#         return Insurance.objects.filter(user=current_user)
 
 
 class ClaimsView(generics.ListCreateAPIView):
@@ -163,9 +163,9 @@ def insurance_view(request, user_id):
 def claim_view(request, user_id):
     all_claims = []
     if user_id:
-        claims = Claim.objects.filter(insurance__user__id=user_id)
+        claims = Claim.objects.filter(insurance__user__id=user_id).order_by('-creation_time')
     else:
-        claims = Claim.objects.filter()
+        claims = Claim.objects.filter().order_by('-creation_time')
 
     for claim in claims:
         _data = {
@@ -219,3 +219,21 @@ def update_claim(request, claim_id):
             return JsonResponse({'Status': 'Success'})
 
 
+def create_claim(request):
+    if request.method == "GET":
+        return JsonResponse({'error': "Method Not Allowed"})
+    else:
+        _request = json.loads(request.body.decode('utf-8'))
+        try:
+            amount = _request.get("amount", None)
+            insurance_id = _request.get("insurance", None)
+            claim = Claim.objects.filter(is_active=True, insurance__id=insurance_id)
+            if not claim:
+                new_claim = Claim.objects.create(amount=amount, insurance_id=insurance_id)
+                new_claim.save()
+            else:
+                return JsonResponse({'status': "Claim already in pending"})
+        except Exception as E:
+            return JsonResponse({'error': str(E)}, status=401)
+        else:
+            return JsonResponse({'status': 'Success'})

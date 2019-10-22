@@ -50,3 +50,8 @@ class Claim(models.Model):
                                       default='P')
     is_active = models.BooleanField(default=True, null=False)
     creation_time = models.DateTimeField(default=timezone.now)
+
+    @classmethod
+    def create(cls, amount, insurance):
+        claim = cls(amount=amount, insurance=insurance)
+        return claim
