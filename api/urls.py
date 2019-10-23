@@ -10,7 +10,6 @@ urlpatterns = [
     path('claim/<int:user_id>', csrf_exempt(claim_view), name="claim"),
     path('insurance_plan/', csrf_exempt(InsurancePlanView.as_view()), name="insurance_plan"),
     path('insurance/<int:user_id>', csrf_exempt(insurance_view), name="user_insurance"),
-    # path('insurance/', csrf_exempt(InsurancesView.as_view()), name="insurance"),
     path('claim/update/<int:claim_id>', csrf_exempt(update_claim), name="update_claim"),
     path('insurance_type/', csrf_exempt(InsuranceTypeView.as_view()), name="insurance_type"),
     path('login/', csrf_exempt(LoginView.as_view()), name="post-login"),
