@@ -1,21 +1,18 @@
 from .models import UserInfo, InsuranceType, InsurancePlan, Insurance, Claim
 from .serializers import UserInfoSerializer, InsurancePlanSerializer, ClaimsSerializer
-from .serializers import InsuranceTypeSerializer, InsurancesSerializer, ClaimUpdateSerialier, UserTypeSerializer
-from django.contrib.auth.views import LoginView as dLoginView, LogoutView as dLogoutView
+from .serializers import InsuranceTypeSerializer, ClaimUpdateSerialier, UserTypeSerializer
+from django.contrib.auth.views import LogoutView as dLogoutView
 from rest_framework_jwt.settings import api_settings
 from rest_framework import generics, permissions
-from .serializers import TokenSerializer
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import status
 from rest_framework.response import Response
-from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import json
 
-class CsrfExemptSessionAuthentication(SessionAuthentication):
 
+class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
         return  # To not perform the csrf check previously happening
 
@@ -48,17 +45,6 @@ class InsurancePlanView(generics.ListCreateAPIView):
     permission_classes = (permissions.AllowAny,)
     queryset = InsurancePlan.objects.all().order_by('id')
     serializer_class = InsurancePlanSerializer
-
-
-# class InsurancesView(generics.ListCreateAPIView):
-#     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-#     permission_classes = (permissions.AllowAny,)
-#     queryset = Insurance.objects.all().order_by('id')
-#     serializer_class = InsurancesSerializer
-#
-#     def get_queryset(self):
-#         current_user = self.request.user
-#         return Insurance.objects.filter(user=current_user)
 
 
 class ClaimsView(generics.ListCreateAPIView):
@@ -227,7 +213,7 @@ def create_claim(request):
         try:
             amount = _request.get("amount", None)
             insurance_id = _request.get("insurance", None)
-            claim = Claim.objects.filter(is_active=True, insurance__id=insurance_id)
+            claim = Claim.objects.filter(approval_state='P', insurance__id=insurance_id)
             if not claim:
                 new_claim = Claim.objects.create(amount=amount, insurance_id=insurance_id)
                 new_claim.save()
